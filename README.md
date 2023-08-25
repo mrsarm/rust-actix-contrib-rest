@@ -6,11 +6,13 @@ the [Actix Web framework](https://actix.rs/).
 
 It does include structs and methods to:
 
-- Managing errors.
-- Properly serialize errors, with a JSON response explaining the reason.
-- Pagination and query search structs.
-- Basic types for managing DB connections and transactions (`sqlx-postgres` feature).
-- Basic methods to easily deals with streams and integration tests.
+- ⚠️ Managing errors.
+- 📣 Properly serialize errors, with a JSON response explaining the reason.
+- 📄 Pagination and query search structs.
+- 🛢 Basic types for managing DB connections and transactions (`sqlx-postgres` feature).
+- ✅ Basic methods to easily deals with streams and integration tests.
+
+Check the 📖 docs at https://docs.rs/actix-contrib-logger/.
 
 ### About
 

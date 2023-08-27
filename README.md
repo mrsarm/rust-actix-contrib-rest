@@ -12,7 +12,7 @@ It does include structs and methods to:
 - 🛢 Basic types for managing DB connections and transactions (`sqlx-postgres` feature).
 - ✅ Basic methods to easily deals with streams and integration tests.
 
-Check the 📖 docs at https://docs.rs/actix-contrib-logger/.
+Check the 📖 docs at https://docs.rs/actix-contrib-rest/.
 
 > (❗️) This project is in a very early stage. 
 

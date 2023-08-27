@@ -12,17 +12,33 @@ use actix_web_validator::Error;
 /// extractor from the [actix-web-validator](https://docs.rs/actix-web-validator) validator crate.
 /// # Example
 /// Configure the method as follow:
-/// ```example
+/// ```
 /// use actix_web::{web, App};
-/// use actix_web_validator::JsonConfig;
+/// use actix_web::HttpResponse;
+/// use actix_web::Responder;
+/// use actix_web_validator::{Json, JsonConfig};
 /// use actix_contrib_rest::response::json_error_handler;
+/// use serde::Deserialize;
+/// use validator::Validate;
+///
+/// #[derive(Deserialize, Validate)]
+/// pub struct FormPayload {
+///     #[validate(length(min = 3, max = 80))]
+///     pub name: String,
+///     // ...
+/// }
+///
+/// async fn post_handler(form: Json<FormPayload>) -> impl Responder {
+///     // ...
+///     HttpResponse::Ok()
+/// }
 ///
 /// fn main() {
 ///     let app = App::new().service(
 ///         web::resource("/api")
 ///             // ...
 ///             .app_data(JsonConfig::default().error_handler(json_error_handler))
-///             .route(web::post().to(api_method))
+///             .route(web::post().to(post_handler))
 ///     );
 /// }
 /// ```

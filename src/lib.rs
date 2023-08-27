@@ -8,6 +8,8 @@
 //! - Pagination and query search structs.
 //! - Basic types for managing DB connections and transactions (`sqlx-postgres` feature).
 //! - Basic methods to easily deals with streams and integration tests.
+//!
+//! > (❗️) This project is in a very early stage.
 
 pub mod page;
 pub mod query;
@@ -16,5 +18,7 @@ pub mod result;
 pub mod stream;
 pub mod test;
 
+#[cfg(feature = "sqlx-postgres")]
+pub mod app_state;
 #[cfg(feature = "sqlx-postgres")]
 pub mod db;

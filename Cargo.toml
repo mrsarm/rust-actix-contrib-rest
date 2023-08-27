@@ -20,8 +20,9 @@ serde = { version = "=1.0.171", features = ["derive"] } # Pin due https://github
 thiserror = "1.0"
 validator = { version = "0.16", features = ["derive"] }
 
+server-env-config = { version = "0.1", optional = true }
 sqlx = { version = "0.7", optional = true }
 
 [features]
-sqlx = ["dep:sqlx"]
+sqlx = ["dep:sqlx", "dep:server-env-config"]
 sqlx-postgres = [ "sqlx", "sqlx/postgres" ]

@@ -1,9 +1,10 @@
 //! Handlers to manage HTTP responses.
 
-use actix_web::{HttpRequest, HttpResponse};
-use actix_web::error::InternalError;
-use actix_web_validator::Error;
 use crate::result::ValidationErrorPayload;
+
+use actix_web::error::InternalError;
+use actix_web::{HttpRequest, HttpResponse};
+use actix_web_validator::Error;
 
 /// Function to handle validation errors when serializing the request payload (JSON body),
 /// or the query string, generating a HTTP 400 error with a JSON body

@@ -9,10 +9,10 @@
 //! - Basic types for managing DB connections and transactions (`sqlx-postgres` feature).
 //! - Basic methods to easily deals with streams and integration tests.
 
-pub mod query;
 pub mod page;
-pub mod result;
+pub mod query;
 pub mod response;
+pub mod result;
 pub mod stream;
 pub mod test;
 

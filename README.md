@@ -14,6 +14,8 @@ It does include structs and methods to:
 
 Check the 📖 docs at https://docs.rs/actix-contrib-logger/.
 
+> (❗️) This project is in a very early stage. 
+
 ### About
 
 **Project Home**: https://github.com/mrsarm/rust-actix-contrib-rest.

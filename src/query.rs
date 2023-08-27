@@ -3,7 +3,6 @@
 use serde::Deserialize;
 use validator::Validate;
 
-
 fn default_page_size() -> i64 {
     50
 }

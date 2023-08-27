@@ -75,7 +75,6 @@ impl From<&ValidationErrors> for ValidationErrorPayload {
 /// See [`HttpResult`].
 #[derive(thiserror::Error, Debug)]
 pub enum AppError {
-
     /// Used to trigger any validation where the error
     /// message doesn't need to be generated (string reference).
     ///

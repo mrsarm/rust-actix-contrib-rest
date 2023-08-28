@@ -14,7 +14,7 @@ It does include structs and methods to:
 
 Check the 📖 docs at https://docs.rs/actix-contrib-rest/.
 
-> (❗️) This project is in a very early stage. 
+> (❗️) This project is in a very early stage.
 
 ### About
 

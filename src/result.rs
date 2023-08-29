@@ -78,7 +78,7 @@ pub enum AppError {
     /// Used to trigger any validation where the error
     /// message doesn't need to be generated (string reference).
     ///
-    /// These errors are processed as HTTP 400 Bad Request.
+    /// These errors are processed as `HTTP 400 Bad Request`.
     ///
     /// # Example
     /// ```example
@@ -94,7 +94,7 @@ pub enum AppError {
     /// Used to trigger any validation where you need
     /// build the string with the error details.
     ///
-    /// These errors are processed as HTTP 400 Bad Request.
+    /// These errors are processed as `HTTP 400 Bad Request`.
     ///
     /// # Example
     /// ```example
@@ -111,13 +111,25 @@ pub enum AppError {
     /// Encapsulates a `SqlxError` error (database errors), like
     /// the DB is not accessible, time outs, and so on.
     ///
-    /// These errors are processed as HTTP 500 Internal Server Error.
+    /// These errors are processed as `HTTP 500 Internal Server Error`.
+    /// # Example
+    /// ```example
+    /// use actix_contrib_rest::result::AppError;
+    /// // ...
+    /// let customer = sqlx::query_as!(
+    ///     Tenant,
+    ///     "SELECT id, name, created_at FROM customers WHERE id = $1", id
+    /// )
+    /// .fetch_optional(&mut **tx)
+    /// .await
+    /// .map_err(AppError::DB)?;    // If there is a DB error, it's mapped here
+    /// ```
     #[error(transparent)]
     DB(#[from] SqlxError),
 
     /// Any other error that needs to be wrapped inside an AppError.
     ///
-    /// These errors are processed as HTTP 500 Internal Server Error.
+    /// These errors are processed as `HTTP 500 Internal Server Error`.
     ///
     /// # Example
     /// Having an Error `e`, can be used as follow:
@@ -180,6 +192,16 @@ pub type Result<T> = core::result::Result<T, AppError>;
 /// use actix_web::{patch, web, HttpResponse};
 /// use actix_web::web::{Data, Path};
 /// use actix_web_validator::Json;
+/// use serde::Deserialize;
+/// use validator::Validate;
+///
+/// #[derive(Deserialize, Validate)]
+/// struct SalePayload {
+///     #[validate(length(min = 3, max = 80))]
+///     pub name: String,
+///     pub prod_id: u32,
+///     // ...
+/// }
 ///
 /// #[patch("{id}")]
 /// async fn read(

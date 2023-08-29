@@ -30,7 +30,7 @@ impl AppState {
     /// This method normally is used once at startup time
     /// when configuring the Actix HTTP Server.
     ///
-    /// Then if your server code each time [`AppState::get_tx()`]
+    /// Then in your server code each time [`AppState::get_tx()`]
     /// is called, the TX is created from the pool.
     ///
     /// # Examples
@@ -71,9 +71,8 @@ impl AppState {
 
     /// Create an AppState but without a pool initialized.
     ///
-    /// This way each time [`AppState::get_tx()`] is called to get a
-    /// transaction, a connection is created for that matter, and closed
-    /// once the TX is consumed.
+    /// This way [`AppState::get_tx()`] cannot be called because there is no pool
+    /// to get a transaction from.  Use [`AppState::get_conn()`] instead.
     ///
     /// See [`AppState::init()`] to create the state with a pool of connections.
     pub fn new(config: Config) -> AppState {
@@ -89,7 +88,7 @@ impl AppState {
     /// the TX, or [`AppState::rollback_tx()`] to release it rolling back the changes
     /// in case of errors.
     ///
-    /// The TX is crated from a connection within the poll of the AppState, or fails
+    /// The TX is created from a connection within the poll of the AppState, or fails
     /// with a `AppError::StaticValidation("Pool not initialized")` if the state
     /// was not initialized with a pool (see [`AppState::init()`]).
     ///
@@ -138,8 +137,9 @@ impl AppState {
     /// has not been initialized and you need a single connection,
     /// otherwise better to use [`AppState::get_tx()`].
     ///
-    /// Once used [`AppState::commit_tx()`] should be called to finish and release
-    /// the TX, or [`AppState::rollback_tx()`] to release it rolling back the changes
+    /// A [`Tx`] can be created with the connection using `Connection::begin` (see example),
+    /// and once used, [`AppState::commit_tx()`] should be called to finish and release it,
+    /// or [`AppState::rollback_tx()`] to release it rolling back the changes
     /// in case of errors.
     ///
     /// # Example

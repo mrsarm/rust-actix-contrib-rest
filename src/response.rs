@@ -23,7 +23,7 @@ use actix_web_validator::Error;
 ///
 /// #[derive(Deserialize, Validate)]
 /// pub struct FormPayload {
-///     #[validate(length(min = 3, max = 80))]
+///     #[validate(length(min = 3, max = 50))]
 ///     pub name: String,
 ///     // ...
 /// }

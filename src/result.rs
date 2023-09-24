@@ -81,7 +81,7 @@ pub enum AppError {
     /// These errors are processed as `HTTP 400 Bad Request`.
     ///
     /// # Example
-    /// ```example
+    /// ```ignore, no_run
     /// use actix_contrib_rest::result::AppError;
     /// // ...
     /// return Err(AppError::StaticValidation(
@@ -97,7 +97,7 @@ pub enum AppError {
     /// These errors are processed as `HTTP 400 Bad Request`.
     ///
     /// # Example
-    /// ```example
+    /// ```ignore, no_run
     /// use actix_contrib_rest::result::AppError;
     /// // ...
     /// return Err(AppError::Validation(
@@ -113,7 +113,7 @@ pub enum AppError {
     ///
     /// These errors are processed as `HTTP 500 Internal Server Error`.
     /// # Example
-    /// ```example
+    /// ```ignore, no_run
     /// use actix_contrib_rest::result::AppError;
     /// // ...
     /// let customer = sqlx::query_as!(
@@ -133,13 +133,13 @@ pub enum AppError {
     ///
     /// # Example
     /// Having an Error `e`, can be used as follow:
-    /// ```example
+    /// ```ignore, no_run
     /// use actix_contrib_rest::result::AppError;
     /// // ...
     /// return Err(AppError::Unexpected(e.into()));
     /// ```
     /// Or something like:
-    /// ```example
+    /// ```ignore, no_run
     /// some_operation().map_err(|e| AppError::Unexpected(e.into()))?;
     /// ```
     #[error(transparent)]
@@ -187,7 +187,7 @@ pub type Result<T> = core::result::Result<T, AppError>;
 /// to allow [`AppError`] to handle properly response
 /// errors.
 /// # Example
-/// ```example
+/// ```ignore, no_run
 /// use actix_contrib_rest::result::HttpResult;
 /// use actix_web::{patch, web, HttpResponse};
 /// use actix_web::web::{Data, Path};

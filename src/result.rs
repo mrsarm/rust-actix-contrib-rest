@@ -127,6 +127,31 @@ pub enum AppError {
     #[error(transparent)]
     DB(#[from] SqlxError),
 
+    /// Used when a resource requested cannot be found,
+    /// or was deleted.
+    ///
+    /// These errors are processed as `HTTP 404 Not Found`.
+    ///
+    /// # Example
+    /// ```ignore, no_run
+    /// use actix_contrib_rest::result::AppError;
+    /// // ...
+    /// return Err(AppError::ResourceNotFound {
+    ///     resource: "order",
+    ///     attribute: "id",
+    ///     value: order.id.to_string()
+    /// });
+    /// ```
+    ///
+    /// In the example above, the error message will be
+    /// *order with id equals to "123432" not found or was deleted*.
+    #[error("{resource} with {attribute} equals to \"{value}\" not found or was deleted")]
+    ResourceNotFound {
+        resource: &'static str,
+        attribute: &'static str,
+        value: String,
+    },
+
     /// Any other error that needs to be wrapped inside an AppError.
     ///
     /// These errors are processed as `HTTP 500 Internal Server Error`.
@@ -150,6 +175,7 @@ impl ResponseError for AppError {
     fn status_code(&self) -> StatusCode {
         match self {
             Self::StaticValidation(_) | Self::Validation(_) => StatusCode::BAD_REQUEST,
+            Self::ResourceNotFound { resource: _, attribute: _, value: _ } => StatusCode::NOT_FOUND,
             Self::Unexpected(_) => StatusCode::INTERNAL_SERVER_ERROR,
             #[cfg(feature = "sqlx")]
             Self::DB(_) => StatusCode::INTERNAL_SERVER_ERROR,
@@ -166,6 +192,13 @@ impl ResponseError for AppError {
             Self::StaticValidation(error) => {
                 HttpResponse::build(status_code)
                     .json(InternalErrorPayload { error })
+            }
+            Self::ResourceNotFound { resource: _, attribute: _, value: _ } => {
+                HttpResponse::build(status_code)
+                    .json(ValidationErrorPayload {
+                        error: self.to_string(),
+                        field_errors: None,
+                    })
             }
             _ => {
                 HttpResponse::build(status_code)

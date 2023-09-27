@@ -143,9 +143,9 @@ pub enum AppError {
     /// });
     /// ```
     ///
-    /// In the example above, the error message will be
-    /// *order with id equals to "123432" not found or was deleted*.
-    #[error("{resource} with {attribute} equals to \"{value}\" not found or was deleted")]
+    /// In the example above, the error message will be:
+    /// *order with id equals to "123432" not found or was removed*.
+    #[error("{resource} with {attribute} equals to \"{value}\" not found or was removed")]
     ResourceNotFound {
         resource: &'static str,
         attribute: &'static str,
@@ -195,10 +195,7 @@ impl ResponseError for AppError {
             }
             Self::ResourceNotFound { resource: _, attribute: _, value: _ } => {
                 HttpResponse::build(status_code)
-                    .json(ValidationErrorPayload {
-                        error: self.to_string(),
-                        field_errors: None,
-                    })
+                    .json(ValidationErrorPayload::new(self.to_string()))
             }
             _ => {
                 HttpResponse::build(status_code)

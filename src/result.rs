@@ -175,6 +175,30 @@ pub enum AppError {
         value: String,
     },
 
+    /// Used when a resource already exists in the system.
+    ///
+    /// These errors are processed as `HTTP 400 Bad Request`.
+    ///
+    /// # Example
+    /// ```ignore, no_run
+    /// use actix_contrib_rest::result::AppError;
+    /// // ...
+    /// return Err(AppError::ResourceAlreadyExists {
+    ///     resource: "invoice",
+    ///     attribute: "number",
+    ///     value: invoice.id.to_string()
+    /// });
+    /// ```
+    ///
+    /// In the example above, the error message will be:
+    /// *invoice with number "123432" already exists*.
+    #[error("{resource} with {attribute} \"{value}\" already exists")]
+    ResourceAlreadyExists {
+        resource: &'static str,
+        attribute: &'static str,
+        value: String,
+    },
+
     /// Any other error that needs to be wrapped inside an AppError.
     ///
     /// These errors are processed as `HTTP 500 Internal Server Error`.
@@ -197,8 +221,8 @@ pub enum AppError {
 impl ResponseError for AppError {
     fn status_code(&self) -> StatusCode {
         match self {
-            Self::StaticValidation(_) | Self::Validation(_) => StatusCode::BAD_REQUEST,
             Self::StaticValidation(_) | Self::Validation(_, _) => StatusCode::BAD_REQUEST,
+            Self::ResourceAlreadyExists { resource: _, attribute: _, value: _ } => StatusCode::BAD_REQUEST,
             Self::ResourceNotFound { resource: _, attribute: _, value: _ } => StatusCode::NOT_FOUND,
             Self::Unexpected(_) => StatusCode::INTERNAL_SERVER_ERROR,
             #[cfg(feature = "sqlx")]
@@ -226,6 +250,13 @@ impl ResponseError for AppError {
                 HttpResponse::build(status_code)
                     .json(ValidationErrorPayload::with_code(
                         "not_found".to_string(),
+                        self.to_string(),
+                    ))
+            }
+            Self::ResourceAlreadyExists { resource: _, attribute: _, value: _ } => {
+                HttpResponse::build(status_code)
+                    .json(ValidationErrorPayload::with_code(
+                        "already_exists".to_string(),
                         self.to_string(),
                     ))
             }

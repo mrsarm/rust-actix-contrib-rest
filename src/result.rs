@@ -14,7 +14,17 @@ use validator::{ValidationError, ValidationErrors};
 /// Use to serialize a simple error with a static message.
 #[derive(Debug, Serialize)]
 pub struct InternalErrorPayload {
+    pub code: Option<&'static str>,
     pub error: &'static str,
+}
+
+impl InternalErrorPayload {
+    pub fn init(error: &'static str) -> Self {
+        Self {
+            code: None,
+            error,
+        }
+    }
 }
 
 /// Use to serialize a validation
@@ -38,6 +48,8 @@ pub struct InternalErrorPayload {
 /// ```
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ValidationErrorPayload {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub code: Option<String>,
     pub error: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub field_errors: Option<HashMap<String, Vec<ValidationError>>>,
@@ -46,6 +58,15 @@ pub struct ValidationErrorPayload {
 impl ValidationErrorPayload {
     pub fn new(detail: String) -> Self {
         ValidationErrorPayload {
+            code: None,
+            error: detail,
+            field_errors: None,
+        }
+    }
+
+    pub fn with_code(code_error: String, detail: String) -> Self {
+        ValidationErrorPayload {
+            code: Some(code_error),
             error: detail,
             field_errors: None,
         }
@@ -62,7 +83,8 @@ impl From<&ValidationErrors> for ValidationErrorPayload {
                 .map(|(k, v)| (String::from(*k), (*v).clone())),
         );
         ValidationErrorPayload {
-            error: "Validation error".to_owned(),
+            code: Some("validation_error".to_owned()),
+            error: if errors.len() > 1 { "Validations error".to_owned() } else { "Validation error".to_owned() },
             field_errors: Some(errors),
         }
     }
@@ -91,7 +113,7 @@ pub enum AppError {
     #[error("{0}")]
     StaticValidation(&'static str),
 
-    /// Used to trigger any validation where you need
+    /// Used to trigger any validation where you need to
     /// build the string with the error details.
     ///
     /// These errors are processed as `HTTP 400 Bad Request`.
@@ -101,11 +123,12 @@ pub enum AppError {
     /// use actix_contrib_rest::result::AppError;
     /// // ...
     /// return Err(AppError::Validation(
-    ///     format!("User linked to account {} already exists.", account.id)
+    ///     Some("insufficient_funds"),
+    ///     format!("Customer with account {} doesn't have enough funds.", account.id)
     /// ));
     /// ```
-    #[error("{0}")]
-    Validation(String),
+    #[error("{1}")]
+    Validation(Option<&'static str>, String),
 
     #[cfg(feature = "sqlx")]
     /// Encapsulates a `SqlxError` error (database errors), like
@@ -175,6 +198,7 @@ impl ResponseError for AppError {
     fn status_code(&self) -> StatusCode {
         match self {
             Self::StaticValidation(_) | Self::Validation(_) => StatusCode::BAD_REQUEST,
+            Self::StaticValidation(_) | Self::Validation(_, _) => StatusCode::BAD_REQUEST,
             Self::ResourceNotFound { resource: _, attribute: _, value: _ } => StatusCode::NOT_FOUND,
             Self::Unexpected(_) => StatusCode::INTERNAL_SERVER_ERROR,
             #[cfg(feature = "sqlx")]
@@ -185,23 +209,31 @@ impl ResponseError for AppError {
     fn error_response(&self) -> HttpResponse {
         let status_code = self.status_code();
         match self {
-            Self::Validation(error) => {
-                HttpResponse::build(status_code)
-                    .json(ValidationErrorPayload::new(error.to_owned()))
+            Self::Validation(code, error) => {
+                match code {
+                    None => HttpResponse::build(status_code)
+                        .json(ValidationErrorPayload::new(error.to_owned())),
+                    Some(c) =>
+                        HttpResponse::build(status_code)
+                            .json(ValidationErrorPayload::with_code(c.to_string(), error.to_owned())),
+                }
             }
             Self::StaticValidation(error) => {
                 HttpResponse::build(status_code)
-                    .json(InternalErrorPayload { error })
+                    .json(InternalErrorPayload::init(error))
             }
             Self::ResourceNotFound { resource: _, attribute: _, value: _ } => {
                 HttpResponse::build(status_code)
-                    .json(ValidationErrorPayload::new(self.to_string()))
+                    .json(ValidationErrorPayload::with_code(
+                        "not_found".to_string(),
+                        self.to_string(),
+                    ))
             }
             _ => {
                 HttpResponse::build(status_code)
-                    .json(InternalErrorPayload {
-                        error: status_code.canonical_reason().unwrap_or("Unknown error")
-                    })
+                    .json(InternalErrorPayload::init(
+                        status_code.canonical_reason().unwrap_or("Unknown error")
+                    ))
             }
         }
     }

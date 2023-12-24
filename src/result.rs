@@ -357,7 +357,7 @@ pub type HttpResult = Result<HttpResponse>;
 
 /// Use to serialize the number of elements
 /// where deleted after a request was made.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct DeletedCount {
     pub deleted: u64,
 }

@@ -200,6 +200,37 @@ pub enum AppError {
         value: String,
     },
 
+    /// Lacks valid authentication credentials for the requested resource.
+    ///
+    /// These errors are processed as `HTTP 401 Unauthorized`.
+    ///
+    /// # Example
+    /// ```ignore, no_run
+    /// use actix_contrib_rest::result::AppError;
+    /// // ...
+    /// return Err(AppError::Unauthorized(
+    ///     "Unauthorized access to ..."
+    /// ));
+    /// ```
+    #[error("{0}")]
+    Unauthorized(&'static str),
+
+    /// Use to indicates that system understands the request but refuses
+    /// to authorize it.
+    ///
+    /// These errors are processed as `HTTP 403 Forbidden`.
+    ///
+    /// # Example
+    /// ```ignore, no_run
+    /// use actix_contrib_rest::result::AppError;
+    /// // ...
+    /// return Err(AppError::Forbidden(
+    ///     "Cannot access to ..."
+    /// ));
+    /// ```
+    #[error("{0}")]
+    Forbidden(&'static str),
+
     /// Any other error that needs to be wrapped inside an AppError.
     ///
     /// These errors are processed as `HTTP 500 Internal Server Error`.
@@ -225,6 +256,8 @@ impl ResponseError for AppError {
             Self::StaticValidation(_) | Self::Validation(_, _) => StatusCode::BAD_REQUEST,
             Self::ResourceAlreadyExists { resource: _, attribute: _, value: _ } => StatusCode::BAD_REQUEST,
             Self::ResourceNotFound { resource: _, attribute: _, value: _ } => StatusCode::NOT_FOUND,
+            Self::Unauthorized(_) => StatusCode::UNAUTHORIZED,
+            Self::Forbidden(_) => StatusCode::FORBIDDEN,
             Self::Unexpected(_) => StatusCode::INTERNAL_SERVER_ERROR,
             #[cfg(feature = "sqlx")]
             Self::DB(_) => StatusCode::INTERNAL_SERVER_ERROR,
@@ -243,7 +276,8 @@ impl ResponseError for AppError {
                             .json(ValidationErrorPayload::with_code(c.to_string(), error.to_owned())),
                 }
             }
-            Self::StaticValidation(error) => {
+            Self::StaticValidation(error)
+                | Self::Unauthorized(error) | Self::Forbidden(error) => {
                 HttpResponse::build(status_code)
                     .json(InternalErrorPayload::init(error))
             }

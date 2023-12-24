@@ -353,3 +353,11 @@ pub type Result<T> = core::result::Result<T, AppError>;
 /// }
 /// ```
 pub type HttpResult = Result<HttpResponse>;
+
+
+/// Use to serialize the number of elements
+/// where deleted after a request was made.
+#[derive(Debug, Serialize)]
+pub struct DeletedCount {
+    pub deleted: u64,
+}

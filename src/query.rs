@@ -81,3 +81,12 @@ impl QuerySearch {
         }
     }
 }
+
+
+/// Struct used to deserialize with `serde` query strings
+/// from a request URL with the `force` argument, that
+/// can be either true or false, or not be set at all.
+#[derive(Debug, Clone, Deserialize, Validate)]
+pub struct Force {
+    pub force: Option<bool>,
+}

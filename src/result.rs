@@ -14,6 +14,7 @@ use validator::{ValidationError, ValidationErrors};
 /// Use to serialize a simple error with a static message.
 #[derive(Debug, Serialize)]
 pub struct InternalErrorPayload {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub code: Option<&'static str>,
     pub error: &'static str,
 }

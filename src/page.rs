@@ -12,7 +12,7 @@ pub struct Page<T> {
     /// zero indexed.
     pub offset: i64,
     /// The size of the current page result, that could
-    /// be <= to the size requested depending of how many
+    /// be <= to the size requested depending on how many
     /// results you get.
     pub page_size: i64,
     /// The total results count including the ones included
@@ -33,7 +33,7 @@ pub struct Page<T> {
 }
 
 impl<T> From<Vec<T>> for Page<T> {
-    /// Creates a page with the vector passe. The `page_size` and
+    /// Creates a page with the vector passed. The `page_size` and
     /// `total` will be equivalent to the size of the `vec`.
     fn from(vec: Vec<T>) -> Self {
         let len: i64 = vec.len() as i64;

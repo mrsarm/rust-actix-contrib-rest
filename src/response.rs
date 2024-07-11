@@ -7,11 +7,11 @@ use actix_web::{HttpRequest, HttpResponse};
 use actix_web_validator::Error;
 
 /// Function to handle validation errors when serializing the request payload (JSON body),
-/// or the query string, generating a HTTP 400 error with a JSON body
+/// or the query string, generating an HTTP 400 error with a JSON body
 /// describing the error. It has to be configured with the [`JsonConfig`](https://docs.rs/actix-web-validator/latest/actix_web_validator/struct.JsonConfig.html)
 /// extractor from the [actix-web-validator](https://docs.rs/actix-web-validator) validator crate.
 /// # Example
-/// Configure the method as follow:
+/// Configure the method as follows:
 /// ```
 /// use actix_web::{web, App};
 /// use actix_web::HttpResponse;

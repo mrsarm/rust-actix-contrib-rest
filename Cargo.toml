@@ -10,7 +10,7 @@ authors = [
 readme = "README.md"
 homepage = "https://github.com/mrsarm/rust-actix-contrib-rest"
 repository = "https://github.com/mrsarm/rust-actix-contrib-rest"
-categories = ["actix-web", "web-programming"]
+categories = ["web-programming"]
 exclude = [
     ".github/workflows/",
     ".gitignore",

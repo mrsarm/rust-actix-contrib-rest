@@ -27,10 +27,10 @@ futures-core = "0.3"
 log = "0.4"
 serde = { version = "1.0", features = ["derive"] }
 thiserror = "1.0"
-validator = { version = ">=0.18.1", features = ["derive"] }
+validator = { version = "0.18.1", features = ["derive"] }
 
 server-env-config = { version = "0.1", optional = true }
-sqlx = { version = "0.7", features = ["runtime-async-std", "tls-native-tls"], optional = true }
+sqlx = { version = ">=0.7", features = ["runtime-async-std", "tls-native-tls"], optional = true }
 
 [features]
 sqlx = ["dep:sqlx", "dep:server-env-config"]

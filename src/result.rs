@@ -81,7 +81,7 @@ impl From<&ValidationErrors> for ValidationErrorPayload {
             error
                 .field_errors()
                 .iter()
-                .map(|(k, v)| (String::from(*k), (*v).clone())),
+                .map(|(k, v)| (String::from(k.clone()), (*v).clone())),
         );
         ValidationErrorPayload {
             code: Some("validation_error".to_owned()),

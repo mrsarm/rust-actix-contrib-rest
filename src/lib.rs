@@ -7,7 +7,7 @@
 //! - Properly serialize errors, with a JSON response explaining the reason.
 //! - Pagination and query search structs.
 //! - Basic types for managing DB connections and transactions (`sqlx-postgres` feature).
-//! - Basic methods to easily deals with streams and integration tests.
+//! - Basic methods to easily deal with streams and integration tests.
 //!
 //! > (❗️) This project is in a very early stage.
 
